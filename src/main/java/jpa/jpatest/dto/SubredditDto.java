@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
-    private String authenticationToken;
-    private String username;
+public class SubredditDto {
+    private Long id;
+    private String subredditName;
+    private String description;
+    private Integer numberOfPosts;
 }
