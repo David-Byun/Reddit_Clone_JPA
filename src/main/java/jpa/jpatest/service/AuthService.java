@@ -33,8 +33,7 @@ public class AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
     private final MailContentBuilder mailContentBuilder;
-    private final AuthenticationManager authenticationManager;
-    private final JWTProvider jwtProvider;
+
 
 
 
@@ -87,12 +86,4 @@ public class AuthService {
 
     }
 
-    public AuthenticationResponse login(LoginRequest loginRequest) {
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        //authenticate를 셋팅해준다.
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-        //token
-        String token = jwtProvider.generateToken(authenticate);
-        return new AuthenticationResponse(token, loginRequest.getUsername());
-    }
 }

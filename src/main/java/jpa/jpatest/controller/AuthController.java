@@ -26,7 +26,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
-        return authService.login(loginRequest);
+//        return authService.login(loginRequest);
+        return null;
     }
 
     @GetMapping("accountVerification/{token}")
