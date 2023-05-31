@@ -1,5 +1,6 @@
 package jpa.jpatest.service;
 
+import io.jsonwebtoken.Jwt;
 import jpa.jpatest.dto.AuthenticationResponse;
 import jpa.jpatest.dto.LoginRequest;
 import jpa.jpatest.dto.RegisterRequest;
@@ -14,6 +15,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +36,6 @@ public class AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
     private final MailContentBuilder mailContentBuilder;
-
-
-
-
     @Transactional
     public void signup(RegisterRequest registerRequest) {
         //part1(가입창에서 받은 회원DTO를 회원ENTITY로 변환후 저장한다)
@@ -68,9 +67,7 @@ public class AuthService {
 
     public void verifyAccount(String token) {
         //token이 입력되면 db에서 토큰을 찾는다.
-        Optional<VerificationToken> verificationTokenOptional = verificationTokenRepository.findByToken(token);
-
-        verificationTokenOptional.orElseThrow(() -> new SpringRedditException("Invalid Token"));
+        Optional<VerificationToken> verificationTokenOptional = Optional.ofNullable(verificationTokenRepository.findByToken(token).orElseThrow(() -> new SpringRedditException("Invalid Token")));
 
         //token을 찾으면 해당 토큰의 username을 찾는다.
         String username = verificationTokenOptional.get().getMember().getUsername();
@@ -86,4 +83,12 @@ public class AuthService {
 
     }
 
+    @Transactional(readOnly = true)
+    public Member getCurrentUser() {
+        //현재 사용자의 인증정보를 가져오기 위해 사용되는 코드
+        org.springframework.security.oauth2.jwt.Jwt principal = (org.springframework.security.oauth2.jwt.Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByUsername(principal.getSubject())
+                .orElseThrow(() -> new UsernameNotFoundException("User name not found - " + principal.getSubject()));
+
+    }
 }

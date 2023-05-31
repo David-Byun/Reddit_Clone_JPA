@@ -1,6 +1,7 @@
 package jpa.jpatest.controller;
 
 import jpa.jpatest.dto.PostRequest;
+import jpa.jpatest.dto.PostResponse;
 import jpa.jpatest.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,9 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity createPost(@RequestBody PostRequest postRequest) {
+    public ResponseEntity<Void> createPost(@RequestBody PostRequest postRequest) {
         postService.save(postRequest);
-        return new ResponseEntity(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -28,13 +29,13 @@ public class PostController {
     }
 
     @GetMapping("/")
-    public List<PostResponse> getAllPosts() {
-        return postService.getAllPosts();
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPosts());
     }
 
     @GetMapping("/by-subreddit/{id}")
-    public List<PostReponse> getPostsByUsername(String username) {
-        return postService.getPostsByUsername(username);
+    public ResponseEntity<List<PostResponse>> getPostsById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.getPostBySubreddit(id));
     }
 
     @GetMapping("/by-user/{name}")
