@@ -17,11 +17,6 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping
-    public ResponseEntity<Void> createPost(@RequestBody PostRequest postRequest) {
-        postService.save(postRequest);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
 
     @GetMapping("/{id}")
     public PostResponse getPost(@PathVariable Long id) {

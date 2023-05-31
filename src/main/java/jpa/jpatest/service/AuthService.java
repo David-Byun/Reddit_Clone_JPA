@@ -47,14 +47,17 @@ public class AuthService {
         member.setEnabled(false);
         userRepository.save(member);
 
-        //part2 토큰생성 > 메일발송
+        //part2 토큰을 생성해서 토큰 레포지토리에 회원과 토큰을 저장한다.
         String token = generateVerificationToken(member);
         String message = mailContentBuilder.build("Thank you for signing up to Spring Reddit, please click on the below url to activate your account : " + ACTIVATION_EMAIL + "/" + token);
 
+        //part3 토큰생성 > 메일발송. NotificationEmail은 subject, recipient, body로 이루어진 Entity
         mailService.sendMail(new NotificationEmail("Plz Activate your account", member.getEmail(), message));
 
     }
 
+
+    //part2 토큰을 생성해서 토큰 레포지토리에 회원과 토큰을 저장한다.
     private String generateVerificationToken(Member member) {
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = new VerificationToken();
@@ -67,10 +70,12 @@ public class AuthService {
 
     public void verifyAccount(String token) {
         //token이 입력되면 db에서 토큰을 찾는다.
-        Optional<VerificationToken> verificationTokenOptional = Optional.ofNullable(verificationTokenRepository.findByToken(token).orElseThrow(() -> new SpringRedditException("Invalid Token")));
+        VerificationToken verificationTokenOptional = verificationTokenRepository.findByToken(token).orElseThrow(() -> new SpringRedditException("Invalid Token"));
 
-        //token을 찾으면 해당 토큰의 username을 찾는다.
-        String username = verificationTokenOptional.get().getMember().getUsername();
+        /*
+        verificationToken이 member 회원의 foreign key를 가지고 있기 때문에, verification token을 이용하여 멤버의 이름을 가져올 수 있음 token을 찾으면 해당 토큰의 username을 찾는다.
+         */
+        String username = verificationTokenOptional.getMember().getUsername();
 
         //해당 username으로 member를 찾는다.
         Member member = userRepository.findByUsername(username).orElseThrow(() -> new SpringRedditException("User Not Found with id - " + username));

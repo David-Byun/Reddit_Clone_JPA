@@ -28,6 +28,8 @@ public class Member {
     private String email;
 
     private LocalDateTime created;
+
+    //token을 찾아서 존재할 경우 권한을 true로 변경해준다.
     private boolean enabled;
 
 }

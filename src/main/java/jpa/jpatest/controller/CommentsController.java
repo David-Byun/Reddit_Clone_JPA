@@ -14,14 +14,7 @@ public class CommentsController {
 
     private final CommentService commentService;
 
-    @PostMapping
-    public ResponseEntity<Void> createComment(@RequestBody CommentsDto commentsDto) {
-        commentService.save(commentsDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
 
-    @GetMapping
-    public void getAllCommentsForPost(@PathVariable Long postId) {
-        ResponseEntity.status(HttpStatus.OK).body(commentService.getAllCommentsForPost(postId));
-    }
+
+
 }
